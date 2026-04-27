@@ -88,7 +88,7 @@ const MediaItem = ({
       <div className={`${className ?? ""} relative overflow-hidden`}>
         <video
           ref={videoRef}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           onClick={onClick}
           playsInline
           muted
@@ -121,7 +121,7 @@ const MediaItem = ({
         <img
           src={item.url}
           alt=""
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           onClick={onClick}
           loading="lazy"
           decoding="async"
@@ -136,10 +136,10 @@ const MediaItem = ({
         src={item.url}
         alt=""
         fill
-        className="object-cover"
+        className="object-cover object-center"
         onClick={onClick}
         loading="lazy"
-        sizes="(max-width: 768px) 100vw, 50vw"
+        sizes="(max-width: 639px) 100vw, (max-width: 768px) 100vw, 50vw"
       />
     </div>
   );
@@ -287,6 +287,128 @@ const GalleryModal = ({
   );
 };
 
+const SLIDE_INTERVAL_MS = 4500;
+
+/** One-at-a-time carousel with autoplay; intended for narrow viewports only (paired with `sm:hidden`). */
+function MobileAutoSlider({
+  items,
+  onOpenItem,
+}: {
+  items: MediaItemType[];
+  onOpenItem: (item: MediaItemType) => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [isInView, setIsInView] = useState(true);
+  const [tabVisible, setTabVisible] = useState(true);
+  const touchStartX = useRef<number | null>(null);
+  const suppressClickRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => setIsInView(e?.isIntersecting ?? false),
+      { threshold: 0.12 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onVis = () => setTabVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
+  useEffect(() => {
+    if (items.length <= 1 || !isInView || !tabVisible) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % items.length);
+    }, SLIDE_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [items.length, isInView, tabVisible]);
+
+  const go = (dir: -1 | 1) => {
+    setIndex((i) => (i + dir + items.length) % items.length);
+  };
+
+  const current = items[index];
+  if (!current) return null;
+
+  return (
+    <div ref={containerRef} className="w-full">
+      <div
+        className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-[#f0e4d8] ring-1 ring-[#722F37]/[0.08] shadow-sm"
+        onTouchStart={(e) => {
+          touchStartX.current = e.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(e) => {
+          const start = touchStartX.current;
+          touchStartX.current = null;
+          if (start == null) return;
+          const dx = (e.changedTouches[0]?.clientX ?? start) - start;
+          if (Math.abs(dx) > 56) {
+            suppressClickRef.current = true;
+            window.setTimeout(() => {
+              suppressClickRef.current = false;
+            }, 320);
+            if (dx > 0) go(-1);
+            else go(1);
+          }
+        }}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Photo gallery"
+      >
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={current.id}
+            className="absolute inset-0 cursor-pointer"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -14 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            onClick={() => {
+              if (suppressClickRef.current) return;
+              onOpenItem(current);
+            }}
+          >
+            <MediaItem
+              item={current}
+              className="pointer-events-none absolute inset-0 h-full w-full"
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {items.length > 1 && (
+        <div
+          className="mt-3 flex items-center justify-center gap-1.5 px-1"
+          role="tablist"
+          aria-label="Slide indicators"
+        >
+          {items.map((item, i) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={i === index}
+              aria-label={`Slide ${i + 1} of ${items.length}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === index
+                  ? "w-6 bg-[#722F37]"
+                  : "w-1.5 bg-[#722F37]/30 hover:bg-[#722F37]/45"
+              }`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface InteractiveBentoGalleryProps {
   mediaItems: MediaItemType[];
   title: string;
@@ -339,63 +461,73 @@ export default function InteractiveBentoGallery({
           />
         ) : (
           <motion.div
-            className="grid auto-rows-[56px] grid-cols-1 gap-2.5 sm:auto-rows-[60px] sm:grid-cols-3 md:grid-cols-4 md:gap-3"
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
-            }}
+            className="w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            {items.map((item, index) => (
-              <motion.div
-                key={item.id}
-                layoutId={`media-${item.id}`}
-                className={`relative cursor-move overflow-hidden rounded-xl ${item.span}`}
-                onClick={() => !isDragging && setSelectedItem(item)}
-                variants={{
-                  hidden: { y: 50, scale: 0.9, opacity: 0 },
-                  visible: {
-                    y: 0,
-                    scale: 1,
-                    opacity: 1,
-                    transition: {
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 25,
-                      delay: index * 0.04,
-                    },
-                  },
-                }}
-                whileHover={{ scale: 1.02 }}
-                drag
-                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                dragElastic={1}
-                onDragStart={() => setIsDragging(true)}
-                onDragEnd={(_, info) => {
-                  setIsDragging(false);
-                  const moveDistance = info.offset.x + info.offset.y;
-                  if (Math.abs(moveDistance) <= 50) return;
-
-                  const newItems = [...items];
-                  const draggedItem = newItems[index];
-                  const targetIndex =
-                    moveDistance > 0
-                      ? Math.min(index + 1, items.length - 1)
-                      : Math.max(index - 1, 0);
-                  newItems.splice(index, 1);
-                  newItems.splice(targetIndex, 0, draggedItem);
-                  setItems(newItems);
-                }}
-              >
-                <MediaItem
-                  item={item}
-                  className="absolute inset-0 h-full w-full"
+            <div className="sm:hidden w-full">
+              <MobileAutoSlider items={items} onOpenItem={setSelectedItem} />
+            </div>
+            <motion.div
+              className="hidden sm:grid grid-cols-2 auto-rows-auto gap-2 sm:auto-rows-[60px] sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 md:gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.06 } },
+              }}
+            >
+              {items.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  layoutId={`media-${item.id}`}
+                  className={`relative cursor-move overflow-hidden rounded-xl bg-[#f0e4d8] ring-1 ring-[#722F37]/[0.08] max-sm:aspect-[4/5] max-sm:col-span-1 max-sm:row-span-1 max-sm:shadow-sm sm:bg-[#FFFBF0]/90 sm:ring-0 ${item.span}`}
                   onClick={() => !isDragging && setSelectedItem(item)}
-                />
-              </motion.div>
-            ))}
+                  variants={{
+                    hidden: { y: 50, scale: 0.9, opacity: 0 },
+                    visible: {
+                      y: 0,
+                      scale: 1,
+                      opacity: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 25,
+                        delay: index * 0.04,
+                      },
+                    },
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  drag
+                  dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                  dragElastic={1}
+                  onDragStart={() => setIsDragging(true)}
+                  onDragEnd={(_, info) => {
+                    setIsDragging(false);
+                    const moveDistance = info.offset.x + info.offset.y;
+                    if (Math.abs(moveDistance) <= 50) return;
+
+                    const newItems = [...items];
+                    const draggedItem = newItems[index];
+                    const targetIndex =
+                      moveDistance > 0
+                        ? Math.min(index + 1, items.length - 1)
+                        : Math.max(index - 1, 0);
+                    newItems.splice(index, 1);
+                    newItems.splice(targetIndex, 0, draggedItem);
+                    setItems(newItems);
+                  }}
+                >
+                  <MediaItem
+                    item={item}
+                    className="absolute inset-0 h-full w-full"
+                    onClick={() => !isDragging && setSelectedItem(item)}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

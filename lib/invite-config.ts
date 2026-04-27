@@ -4,7 +4,7 @@ export const inviteConfig = {
   title: "GradChella",
   tagline:
     "The syllabus is closed. The guest list is not. One night, zero finals energy.",
-  when: "Tuesday, May 12, 2026 · 4:30 PM",
+  when: "Wednesday, May 13, 2026 · 4:30 PM",
   where: "12028 S 46th St, Phoenix, AZ 85044",
   /** Shown on the details card — GradChella is the whole mood (no “dress code” copy). */
   gradChellaBlurb:
@@ -14,5 +14,5 @@ export const inviteConfig = {
   /** Direct link for “open in new tab” / sharing */
   rsvpUrl: "https://form.typeform.com/to/01KPWAH0E0A32GH59P22RNDRNS",
   /** Five letters A–Z for the pre-reveal Wordle-style puzzle. */
-  wordleAnswer: "CHELA",
+  wordleAnswer: "GRADS",
 };

@@ -29,7 +29,7 @@ type TileState = "empty" | "correct" | "present" | "absent";
 function normalizeAnswer(raw: string): string {
   const u = raw.toUpperCase().replace(/[^A-Z]/g, "");
   if (u.length === COLS) return u;
-  return "CHELA";
+  return "GRADS";
 }
 
 function scoreGuess(guess: string, answer: string): TileState[] {
@@ -59,7 +59,7 @@ function scoreGuess(guess: string, answer: string): TileState[] {
 export function WordlePuzzle({ onSolved }: { onSolved: () => void }) {
   const reduce = useReducedMotion();
   const answer = useMemo(
-    () => normalizeAnswer(inviteConfig.wordleAnswer ?? "CHELA"),
+    () => normalizeAnswer(inviteConfig.wordleAnswer ?? "Grads"),
     [],
   );
 

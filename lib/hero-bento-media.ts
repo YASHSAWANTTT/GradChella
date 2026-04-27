@@ -5,13 +5,13 @@ export interface HeroBentoMediaItem {
   span: string;
 }
 
-/** Bento tile span patterns (cycles if you add more items). */
+/** Bento spans from `sm` up; below that the gallery uses uniform tiles in the component. */
 const SPANS = [
-  "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
-  "md:col-span-2 md:row-span-2 col-span-1 sm:col-span-2 sm:row-span-2",
-  "md:col-span-1 md:row-span-3 sm:col-span-2 sm:row-span-2",
-  "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
-  "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+  "sm:col-span-1 sm:row-span-2 md:col-span-1 md:row-span-3",
+  "sm:col-span-2 sm:row-span-2 md:col-span-2 md:row-span-2",
+  "sm:col-span-2 sm:row-span-2 md:col-span-1 md:row-span-3",
+  "sm:col-span-1 sm:row-span-2 md:col-span-2 md:row-span-2",
+  "sm:col-span-1 sm:row-span-2 md:col-span-1 md:row-span-3",
 ] as const;
 
 /** macOS screenshots — narrow no-break space (U+202F) before `AM`. */

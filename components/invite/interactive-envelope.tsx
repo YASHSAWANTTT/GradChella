@@ -165,10 +165,6 @@ export function InteractiveEnvelope({
           )}
         </motion.div>
       </motion.div>
-
-      <p className="max-w-xs text-center text-xs text-[#7a4a52]">
-        Sound off? Good. This invite is purely visual vibes.
-      </p>
     </div>
   );
 }
