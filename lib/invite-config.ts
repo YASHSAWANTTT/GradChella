@@ -9,10 +9,11 @@ export const inviteConfig = {
   /** Shown on the details card — GradChella is the whole mood (no “dress code” copy). */
   gradChellaBlurb:
     "",
-  /** Typeform “live” embed id (from your embed snippet’s data-tf-live) */
-  typeformLiveId: "01KPWAH0E0A32GH59P22RNDRNS",
-  /** Direct link for “open in new tab” / sharing */
-  rsvpUrl: "https://form.typeform.com/to/01KPWAH0E0A32GH59P22RNDRNS",
+  /** Short link — open in new tab / share */
+  rsvpUrl: "https://forms.gle/jeHjbbHrbCvrNNBt5",
+  /** Same form for iframe: Send → embed in Google Forms, or `viewform?embedded=true` on the docs.google.com URL */
+  rsvpEmbedUrl:
+    "https://docs.google.com/forms/d/e/1FAIpQLSeYaAQdDlRelwv1BdpPCIE7yDR7NMsI6Xjt2fr2xIfQT0c9Zw/viewform?embedded=true",
   /** Five letters A–Z for the pre-reveal Wordle-style puzzle. */
   wordleAnswer: "GRADS",
 };

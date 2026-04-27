@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { inviteConfig } from "@/lib/invite-config";
 import { cn } from "@/lib/utils";
-import { TypeformEmbed } from "@/components/invite/typeform-embed";
+import { GoogleFormEmbed } from "@/components/invite/google-form-embed";
 
 const container = {
   hidden: { opacity: 0 },
@@ -99,7 +99,7 @@ export function InviteReveal() {
                 .
               </p>
             </div>
-            <TypeformEmbed />
+            <GoogleFormEmbed />
           </TiltCard>
         </motion.div>
       </div>

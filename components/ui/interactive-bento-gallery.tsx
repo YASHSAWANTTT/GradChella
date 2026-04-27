@@ -471,7 +471,7 @@ export default function InteractiveBentoGallery({
               <MobileAutoSlider items={items} onOpenItem={setSelectedItem} />
             </div>
             <motion.div
-              className="hidden sm:grid grid-cols-2 auto-rows-auto gap-2 sm:auto-rows-[60px] sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 md:gap-3"
+              className="hidden sm:grid w-full grid-cols-3 gap-2.5 sm:gap-3 md:grid-cols-4 md:gap-3"
               initial="hidden"
               animate="visible"
               variants={{
@@ -483,7 +483,7 @@ export default function InteractiveBentoGallery({
                 <motion.div
                   key={item.id}
                   layoutId={`media-${item.id}`}
-                  className={`relative cursor-move overflow-hidden rounded-xl bg-[#f0e4d8] ring-1 ring-[#722F37]/[0.08] max-sm:aspect-[4/5] max-sm:col-span-1 max-sm:row-span-1 max-sm:shadow-sm sm:bg-[#FFFBF0]/90 sm:ring-0 ${item.span}`}
+                  className="relative aspect-square w-full cursor-move overflow-hidden rounded-xl bg-[#FFFBF0]/90"
                   onClick={() => !isDragging && setSelectedItem(item)}
                   variants={{
                     hidden: { y: 50, scale: 0.9, opacity: 0 },
