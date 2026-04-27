@@ -32,7 +32,7 @@ const GRADUATION_PHOTOS = [
   "/IMG_7855.JPG",
 ] as const;
 
-const PUBLIC_PHOTOS = [...SCREENSHOTS, ...GRADUATION_PHOTOS];
+const PUBLIC_PHOTOS = [...SCREENSHOTS, ...GRADUATION_PHOTOS].toReversed();
 
 export const heroBentoMedia: HeroBentoMediaItem[] = PUBLIC_PHOTOS.map(
   (url, i) => ({
