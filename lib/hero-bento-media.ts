@@ -1,3 +1,5 @@
+import { heroPhotoSequence } from "@/lib/hero-photo-sequence";
+
 export interface HeroBentoMediaItem {
   id: number;
   type: "image" | "video";
@@ -14,27 +16,7 @@ const SPANS = [
   "sm:col-span-1 sm:row-span-2 md:col-span-1 md:row-span-3",
 ] as const;
 
-/** macOS screenshots — narrow no-break space (U+202F) before `AM`. */
-const SCREENSHOTS = [
-  `/Screenshot 2026-04-23 at 9.06.18\u202fAM.png`,
-  `/Screenshot 2026-04-23 at 9.06.44\u202fAM.png`,
-  `/Screenshot 2026-04-23 at 9.07.00\u202fAM.png`,
-] as const;
-
-/** Rest of `public/` gallery (HEIC uses `<img>` in the bento component). */
-const GRADUATION_PHOTOS = [
-  "/250426 Graduation DP7A1602 - AW.JPG",
-  "/250504 Graduation DP1A1280 - AW.JPG",
-  "/IMG_7839.JPG",
-  "/IMG_7841.JPG",
-  "/IMG_7847.JPG",
-  "/IMG_7852.JPG",
-  "/IMG_7855.JPG",
-] as const;
-
-const PUBLIC_PHOTOS = [...SCREENSHOTS, ...GRADUATION_PHOTOS].toReversed();
-
-export const heroBentoMedia: HeroBentoMediaItem[] = PUBLIC_PHOTOS.map(
+export const heroBentoMedia: HeroBentoMediaItem[] = heroPhotoSequence.map(
   (url, i) => ({
     id: i + 1,
     type: "image" as const,
